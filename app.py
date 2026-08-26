@@ -3,12 +3,22 @@ import random
 import re
 import threading
 import webbrowser
+
 from deep_translator import GoogleTranslator
 from flask import Flask, render_template, request, session
 import requests
 from rapidfuzz import fuzz
+
+from config import Config
+
+# สร้าง Flask Application
 app = Flask(__name__)
-app.secret_key = "game_recommendation_secret_key_secure_v7"
+
+# โหลดค่าจาก config.py
+app.config.from_object(Config)
+
+# ใช้ SECRET_KEY จาก config.py
+app.secret_key = app.config["SECRET_KEY"]
 GAME_CACHE = {
     "ids": [],
     "data": {},
