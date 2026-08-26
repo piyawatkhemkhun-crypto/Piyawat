@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Recommendation System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{
+    background:#f5f7fb;
+}
+.game-card{
+    transition:.2s;
+}
+.game-card:hover{
+    transform:translateY(-5px);
+}
+.game-img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+}
+.quick-btn{
+    margin:3px;
+}
+</style>
+</head>
+<body>
+<div class="container my-5">
+<h2 class="text-center fw-bold text-primary mb-4">
+🎮 Game Recommendation System
+</h2>
+<!-- SEARCH FORM -->
+<form method="GET"
+      action="/"
+      class="bg-white p-4 rounded shadow-sm mb-4">
+<div class="row g-3">
+<div class="col-md-4">
+<label class="fw-bold">
+ค้นหาเกมด้วยภาษาคน
+</label>
+<input
+type="text"
+class="form-control"
+name="search_name"
+value="{{search_name|default('')}}"
+placeholder="เช่น เกมยิง เกมชิลๆ สร้างบ้าน เล่นกับเพื่อน">
+</div>
+<div class="col-md-3">
+<label class="fw-bold">
+โหมดการเล่น
+</label>
+<select name="play_mode"
+class="form-select">
+<option value="">
+ทุกโหมด
+</option>
+<option value="singleplayer"
+{% if play_mode=="singleplayer" %}selected{% endif %}>
+👤 เล่นคนเดียว
+</option>
+<option value="local co-op"
+{% if play_mode=="local co-op" %}selected{% endif %}>
+👥 เล่น 2 คน
+</option>
+<option value="co-op"
+{% if play_mode=="co-op" %}selected{% endif %}>
+🤝 เล่นกับเพื่อน
+</option>
+<option value="multiplayer"
+{% if play_mode=="multiplayer" %}selected{% endif %}>
+🌐 เล่นหลายคน
+</option>
+<option value="pvp"
+{% if play_mode=="pvp" %}selected{% endif %}>
+⚔️ PvP
+</option>
+<option value="pve"
+{% if play_mode=="pve" %}selected{% endif %}>
+👾 PvE
+</option>
+</select>
+</div>
+<div class="col-md-2">
+<label class="fw-bold">
+ราคาสูงสุด ($)
+</label>
+<input
+type="number"
+step="0.01"
+class="form-control"
+name="max_price"
+value="{{max_price|default('')}}"
+placeholder="เช่น 20">
+</div>
+<div class="col-md-2">
+<label class="fw-bold">
+เรียงราคา
+</label>
+<select name="sort_price"
+class="form-select">
+<option value="">
+แนะนำ
+</option>
+<option value="low_high"
+{% if sort_price=="low_high" %}selected{% endif %}>
+ถูก → แพง
+</option>
+<option value="high_low"
+{% if sort_price=="high_low" %}selected{% endif %}>
+แพง → ถูก
+</option>
+</select>
+</div>
+<div class="col-md-1 d-flex align-items-end">
+<button class="btn btn-primary w-100">
+🔎
+</button>
+</div>
+</div>
+</form>
+<!-- QUICK SEARCH -->
+<div class="bg-white p-3 rounded shadow-sm mb-4">
+<h6 class="fw-bold">
+ค้นหาเร็ว
+</h6>
+<a href="/?search_name=เกมยิง"
+class="btn btn-outline-primary btn-sm quick-btn">
+🔫 เกมยิง
+</a>
+<a href="/?search_name=สร้างบ้านเอาชีวิตรอด"
+class="btn btn-outline-primary btn-sm quick-btn">
+🏠 สร้างบ้าน
+</a>
+<a href="/?search_name=ทำฟาร์ม"
+class="btn btn-outline-primary btn-sm quick-btn">
+🌱 ฟาร์ม
+</a>
+<a href="/?search_name=เล่นกับเพื่อน"
+class="btn btn-outline-primary btn-sm quick-btn">
+👥 เล่นกับเพื่อน
+</a>
+<a href="/?search_name=เกมชิลๆ"
+class="btn btn-outline-primary btn-sm quick-btn">
+😌 เกมชิล
+</a>
+</div>
+<div class="d-flex justify-content-between mb-3">
+<span>
+พบเกมทั้งหมด :
+<strong>{{total_games}}</strong>
+เกม
+</span>
+{% if search_name %}
+<span class="text-muted">
+ค้นหา :
+{{search_name}}
+</span>
+{% endif %}
+</div>
+<!-- GAME LIST -->
+<div class="row">
+{% for game in games %}
+<div class="col-lg-6 mb-4">
+<div class="card shadow-sm border-0 h-100 game-card">
+<div class="row g-0">
+<div class="col-4">
+{% if game.image %}
+<img
+src="{{game.image}}"
+class="game-img rounded-start"
+loading="lazy">
+{% else %}
+<img
+src="https://via.placeholder.com/300x160?text=No+Image"
+class="game-img rounded-start">
+{% endif %}
+</div>
+<div class="col-8">
+<div class="card-body">
+<h5 class="fw-bold text-truncate">
+{{game.name}}
+</h5>
+<p class="small text-muted">
+🎮 Genre :
+{{game.genres}}
+</p>
+<p>
+💰 ราคา :
+{% if game.price_usd|default(0)==0 %}
+<span class="text-success fw-bold">
+ฟรี
+</span>
+{% else %}
+<strong>
+${{"%.2f"|format(game.price_usd|default(0))}}
+</strong>
+{% endif %}
+</p>
+<p>
+⭐ AI Score
+<span class="badge bg-primary">
+{{game.ai_score|default(0)}}
+</span>
+</p>
+<span class="badge
+{% if game.rating_label=="Popular" %}
+bg-danger
+{% else %}
+bg-secondary
+{% endif %}
+">
+{{game.rating_label}}
+</span>
+<span>
+Meta {{game.metascore}}
+</span>
+<br><br>
+<a href="{{game.link}}"
+target="_blank"
+class="btn btn-sm btn-outline-dark">
+ดู Steam Store
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% else %}
+<div class="text-center py-5">
+<h5>
+ไม่พบเกม
+</h5>
+<p class="text-muted">
+ลองเปลี่ยนคำค้นหาใหม่
+</p>
+</div>
+{% endfor %}
+</div>
+<!-- PAGINATION -->
+{% if total_pages > 1 %}
+<nav>
+<ul class="pagination justify-content-center">
+<li class="page-item {% if page<=1 %}disabled{% endif %}">
+<a class="page-link"
+href="/?page={{page-1}}&search_name={{search_name}}&play_mode={{play_mode}}&max_price={{max_price}}&sort_price={{sort_price}}">
+ก่อนหน้า
+</a>
+</li>
+<li class="page-item disabled">
+<span class="page-link">
+หน้า {{page}} / {{total_pages}}
+</span>
+</li>
+<li class="page-item {% if page>=total_pages %}disabled{% endif %}">
+<a class="page-link"
+href="/?page={{page+1}}&search_name={{search_name}}&play_mode={{play_mode}}&max_price={{max_price}}&sort_price={{sort_price}}">
+ถัดไป
+</a>
+</li>
+</ul>
+</nav>
+{% endif %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
