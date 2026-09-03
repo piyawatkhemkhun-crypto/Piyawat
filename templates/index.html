@@ -37,7 +37,7 @@ body{
 <div class="row g-3">
 <div class="col-md-4">
 <label class="fw-bold">
-ค้นหาเกมด้วยภาษาคน
+ค้นหาแนวเกมที่สนใจ
 </label>
 <input
 type="text"
@@ -104,11 +104,11 @@ class="form-select">
 </option>
 <option value="low_high"
 {% if sort_price=="low_high" %}selected{% endif %}>
-ถูก → แพง
+น้อยสุด → มากสุด
 </option>
 <option value="high_low"
 {% if sort_price=="high_low" %}selected{% endif %}>
-แพง → ถูก
+มากสุด → น้อยสุด
 </option>
 </select>
 </div>
