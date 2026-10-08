@@ -1,0 +1,7 @@
+Flask
+gunicorn
+requests
+rapidfuzz
+deep-translator
+beautifulsoup4
+lxml
